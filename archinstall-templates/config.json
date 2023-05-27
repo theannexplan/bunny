@@ -4,9 +4,9 @@
     "debug": false,
     "disk_encryption": null,
     "harddrives": [
-        "/dev/sda"
+        "<<<Disk Directory Here>>>"
     ],
-    "hostname": "arch1",
+    "hostname": "archbox",
     "kernels": [
         "linux"
     ],

@@ -11,8 +11,17 @@ network_range="10.0.0.0/24"
 # If unsure of your network range, run the following:
 # ip -o -f inet addr show | awk '/scope global/ {print $4}'
 
+
+
+
+# The Script
+
+
+
+
+
 # Set the file to write to
-file2write="./inventory.ini"
+file2write="./inventory"
 
 # Run nmap scan and extract active IP addresses
 active_ips=$(nmap -sn $network_range | grep "Nmap scan report" | awk '{print $5}')

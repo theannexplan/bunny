@@ -1,5 +1,5 @@
 {
-    "/dev/sda": {
+    "<<<Disk Directory Here>>>": {
         "partitions": [
             {
                 "boot": true,

@@ -46,13 +46,15 @@ harden_firewall() {
     sudo ufw default allow outgoing
 
     # Allow specific ports
-    sudo ufw allow 22/tcp           # SSH
+    sudo ufw allow 22/tcp           # SSH (Ansible)
     sudo ufw allow 80/tcp           # HTTP webserver
     sudo ufw allow 443/tcp          # HTTPS webserver
     sudo ufw allow 3478/tcp         # TURN over TCP (used by Coturn)
     sudo ufw allow 3478/udp         # TURN over UDP (used by Coturn)
+    sudo ufw allow 5432/tcp         # PostgreSQL
     sudo ufw allow 5349/tcp         # TURN over TCP (used by Coturn)
     sudo ufw allow 5349/udp         # TURN over UDP (used by Coturn)
+    sudo ufw allow 6443/tcp         # Kubernetes API Server
     sudo ufw allow 8448/tcp         # Matrix Federation API HTTPS webserver
     sudo ufw allow 49152:49172/udp  # TURN over UDP
 

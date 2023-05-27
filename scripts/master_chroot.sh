@@ -1,15 +1,26 @@
 #!/bin/bash
 
+# Modify the following information
+new_username="<<<Username Here>>>"
+new_password="<<<Password Here>>>"
+new_hostname="<<<New Hostname Here>>>"
+
+
+
+
+# The Script
+
+
+
+
+
+
 # Update and upgrade the system
 yes | sudo pacman -Sy
 yes | sudo pacman -Syu
 
 # Install tools to help manage other servers
 yes | sudo pacman -S ansible nmap
-
-# Add a new sudo user
-new_username="<<<username>>>"
-new_password="<<<password>>>"
 
 if id -u "$new_username" >/dev/null 2>&1; then
     echo "User $new_username already exists."
@@ -23,22 +34,18 @@ fi
 sudo sh -c "echo '$new_username ALL=(ALL) ALL' >> /etc/sudoers"
 echo "User $new_username added to the sudoers file."
 
-# Add users with a folder in /home to the Docker group
-DOCKER_GROUP="docker"
-while IFS=: read -r username _ uid gid _ home _; do
-    if [[ -d "$home" && $home != "/nonexistent" ]]; then
-        if ! id -nG "$username" | grep -qw "$DOCKER_GROUP"; then
-            # Add the user to the Docker group
-            sudo usermod -aG $DOCKER_GROUP $username
-            echo "User '$username' has been added to the '$DOCKER_GROUP' group."
-        else
-            echo "User '$username' is already a member of the '$DOCKER_GROUP' group."
-        fi
-    fi
-done < <(grep /home/ /etc/passwd)
+# Add new user to Docker group
+sudo usermod -aG docker $new_username
+
+# Set a new hostname for the server
+echo "${new_hostname}" | sudo tee /etc/hostname > /dev/null
+sudo hostnamectl set-hostname "${new_hostname}"
+sudo sed -i "s/127.0.1.1.*/127.0.1.1\t${new_hostname}/" /etc/hosts
+echo -e "\nHostname set to: ${new_hostname}\n"
 
 # Generate SSH Keys For The Master Node
-ssh-keygen -t ed25519 -N "" -C "master@matrix.dev00ps.com" -f ~/.ssh/id_ed
+ssh-keygen -t ed25519 -N "" -C "masternode" -f ~/.ssh/id_ed
+echo -e "\nGenerated an SSH key."
 
 # Add the SSH key to the new user's SSH session
 sudo -u $new_username bash -c "eval \$(ssh-agent); ssh-add /home/$new_username/.ssh/id_ed"
@@ -62,7 +69,15 @@ Now Follow These Steps:
 
     curl -sSL http://DOMAIN:PORT/folders/slave_setup.sh | bash
 
-    5 - Once the script has finished executing, you can delete the script from the http server.
+    Note: You can use a url shortener such as https://www.shorturl.at/ to reduce the number of key strokes you need to make
+
+    5 - Once the script has finished executing on all servers, modify and run the inventory_gen.sh script on this server.
+
+    6 - Copy the generated 'inventory' file to /etc/ansible/hosts
+
+    7 - Run the following command to test the connection to all slave nodes:
+    
+    ansible all -m ping 
 
 DONE!!!
 "
