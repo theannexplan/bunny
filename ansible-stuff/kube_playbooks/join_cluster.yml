@@ -1,0 +1,7 @@
+---
+- hosts: kubernetes-nodes[1:]
+  become: true
+
+  tasks:
+    - name: Join Kubernetes cluster
+      command: sh /home/{{ ansible_user }}/.kube/kube_join.sh

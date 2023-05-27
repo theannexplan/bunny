@@ -1,0 +1,50 @@
+---
+- hosts: kubernetes-nodes
+  become: true
+
+  tasks:
+    - name: Install Docker
+      package:
+        name: docker
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add Kubernetes repository key
+      pacman_key:
+        id: 3EB749B6A04A7EF8
+        state: present
+
+    - name: Add Kubernetes repository
+      pacman_repository:
+        repo: archlinux-kubernetes
+        keyserver: keyserver.ubuntu.com
+        keyid: 3EB749B6A04A7EF8
+        state: present
+
+    - name: Install Kubernetes packages
+      package:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+
+    - name: Enable kubelet service
+      systemd:
+        name: kubelet
+        enabled: yes
+
+    - name: Configure sysctl settings
+      sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_set: yes
+        state: present
+      with_items:
+        - { name: "net.bridge.bridge-nf-call-iptables", value: "1" }
+        - { name: "net.ipv4.ip_forward", value: "1" }

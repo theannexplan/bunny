@@ -1,0 +1,14 @@
+---
+- hosts: kubernetes-nodes[0]
+  become: true
+
+  tasks:
+    - name: Initialize Kubernetes cluster
+      command: kubeadm init --pod-network-cidr=192.168.0.0/16
+      register: kubeadm_output
+
+    - name: Save Kubernetes join command
+      lineinfile:
+        path: /home/{{ ansible_user }}/.kube/kube_join.sh
+        create: yes
+        line: "{{ kubeadm_output.stdout_lines[-1] }}"

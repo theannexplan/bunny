@@ -1,0 +1,6 @@
+- hosts: kubernetes-nodes
+  become: true
+
+  tasks:
+    - name: Install Calico CNI
+      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
