@@ -9,14 +9,14 @@ install_yay() {
     
     # Switch to the "arch" user
     sudo -u $new_user bash << EOF
-# Clone yay repository
-git clone https://aur.archlinux.org/yay.git /opt/yay
+    # Clone yay repository
+    git clone https://aur.archlinux.org/yay.git /opt/yay
 
-# Change directory to yay
-cd /opt/yay
+    # Change directory to yay
+    cd /opt/yay
 
-# Build and install yay
-makepkg -si
+    # Build and install yay
+    makepkg -si
 EOF
 }
 
@@ -72,11 +72,17 @@ harden_packages_kernel_microcode() {
     # Install the latest kernel
     sudo pacman -S linux
 
-    # Install the latest microcode updates for Intel processors
-    sudo pacman -S intel-ucode
+    # Detect if using an Intel cpu
+    if [ -n "$(lscpu | grep GenuineIntel)" ]; then
+        # Install the latest microcode updates for Intel processors
+        sudo pacman -S intel-ucode
+    fi
 
-    # Install the latest microcode updates for AMD processors
-    sudo pacman -S amd-ucode
+    # Detect if using an AMD cpu
+    if [ -n "$(lscpu | grep AuthenticAMD)" ]; then
+        # Install the latest microcode updates for AMD processors
+        sudo pacman -S amd-ucode
+    fi
 
     echo "Packages, Kernel, and Microcode updated successfully."
 }
